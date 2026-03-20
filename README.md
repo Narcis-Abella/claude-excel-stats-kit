@@ -1,129 +1,136 @@
 # claude-excel-stats-kit
 
-A self-configuration kit that turns **Claude for Excel** into a rigorous academic statistics agent — ready to support peer-reviewed research and IEEE-style reporting.
+Most researchers don't have a statistics problem. They have a tooling problem.
 
-## What it does
+You know which test to run. You know what the results should look like. But between a raw dataset and a publication-ready Methods section, there are hours of work that have nothing to do with your research: cleaning inconsistent data, navigating R syntax you use twice a year, hunting through SPSS menus, formatting tables, writing the same boilerplate statistical prose you've written a dozen times before.
 
-Paste one prompt into Claude for Excel and it autonomously:
-- Adds persistent statistical rules to its memory
-- Creates 10 specialized skills covering the full academic statistics pipeline
+This kit eliminates that overhead.
 
-After setup, Claude for Excel can run a complete analysis — from EDA to residual diagnostics — and generate Methods and Results sections in IEEE/APA style, ready to copy-paste into a paper.
+Paste one prompt into Claude for Excel and it becomes a full academic statistics agent — one that handles the pipeline from raw data to IEEE-formatted results, so you can spend your time on the science instead of the scaffolding.
 
 ---
 
 ## Quick start
 
-### 1. Prerequisites
-- A Claude for Excel account (Microsoft 365 + Claude extension)
-- A free [XLSTAT Cloud](https://app.xlstat.com) account (for formal tests like Shapiro-Wilk, ANOVA, Kruskal-Wallis)
+### Prerequisites
+- Microsoft 365 with the [Claude for Excel](https://www.anthropic.com/claude-for-excel) add-in (requires Claude Pro, ~$20/month)
+- A free [XLSTAT Cloud](https://app.xlstat.com) account — used for formal hypothesis tests that Excel cannot run natively (Shapiro-Wilk, Welch ANOVA, Kruskal-Wallis, Breusch-Pagan)
 
-### 2. Generate the Excel configuration file
+### Setup (one time, ~2 minutes)
 
-```bash
-pip install openpyxl
-python build_stats_kit.py
-```
+1. Download `ClaudeForExcel_StatsKit.xlsx` from this repository
+2. Open it in Excel Online
+3. Open the Claude for Excel sidebar
+4. Copy the full text from cell **B2** of sheet `00_MASTER_PROMPT`
+5. Paste it into the Claude for Excel chat
 
-This creates `ClaudeForExcel_StatsKit.xlsx`.
+Done. Claude will autonomously create all 10 skills and update its persistent instructions — no further input needed.
 
-### 3. Self-configure Claude for Excel
-
-1. Open `ClaudeForExcel_StatsKit.xlsx` in Excel Online
-2. Open the Claude for Excel sidebar
-3. Copy the full text from cell **B2** of sheet `00_MASTER_PROMPT`
-4. Paste it into the Claude for Excel chat
-5. Claude will autonomously create all 10 skills and update its persistent instructions — no further input needed
-
-### 4. Run your first analysis
+### Run your first analysis
 
 Once configured, say:
 
-> "Academic analysis" or "/academic-stats-protocol"
+> `"Academic analysis"` or `/academic-stats-protocol`
 
-Claude will guide you through the full pipeline with your data.
+Claude will ask for your response variable and grouping factors, then run the full pipeline.
 
 ---
 
 ## What gets installed
 
 ### Persistent instructions
-Global statistical rules added to Claude for Excel's memory:
-- Capability map (what to do in Excel vs what to delegate to XLSTAT Cloud)
-- Default statistical choices (Welch ANOVA, Holm-Bonferroni, Shapiro-Wilk)
-- IEEE reporting format rules
-- "Floor not ceiling" policy — skills are a minimum, not a restriction
+Global statistical rules added to Claude for Excel's memory — sensible defaults grounded in peer-reviewed methodology, a clear capability map of what to do in Excel vs. what to delegate to XLSTAT Cloud, and IEEE reporting format rules.
 
-### 10 Skills
+### 10 skills
 
-| Sheet | Skill | Purpose |
-|-------|-------|---------|
-| 02 | `academic-stats-protocol` | Master orchestrator — runs the full pipeline |
-| 03 | `stats-descriptive` | EDA: mean, SD, CI, skewness, kurtosis, flags |
-| 04 | `stats-normality` | Shapiro-Wilk via XLSTAT + distribution fitting |
-| 05 | `stats-homogeneity` | Levene / Bartlett via XLSTAT |
-| 06 | `stats-anova` | Welch ANOVA / Kruskal-Wallis via XLSTAT |
-| 07 | `stats-posthoc` | Games-Howell / Tukey HSD / Dunn + Holm-Bonferroni |
-| 08 | `stats-regression` | OLS via LINEST(), VIF, model comparison |
-| 09 | `stats-residuals` | Cook's D, Q-Q, Breusch-Pagan, Durbin-Watson |
-| 10 | `stats-report` | IEEE Methods + Results text generation |
-| 11 | `xlstat-guide` | Step-by-step XLSTAT Cloud navigation |
+| Skill | Purpose |
+|-------|---------|
+| `academic-stats-protocol` | Master orchestrator — runs the full pipeline |
+| `stats-descriptive` | EDA: mean, SD, CI, skewness, kurtosis, automatic flags |
+| `stats-normality` | Shapiro-Wilk via XLSTAT + distribution fitting |
+| `stats-homogeneity` | Levene / Bartlett via XLSTAT |
+| `stats-anova` | Welch ANOVA / Kruskal-Wallis via XLSTAT |
+| `stats-posthoc` | Games-Howell / Tukey HSD / Dunn + Holm-Bonferroni |
+| `stats-regression` | OLS via LINEST(), VIF, model comparison by AIC/BIC |
+| `stats-residuals` | Cook's D, Q-Q, Breusch-Pagan, Durbin-Watson |
+| `stats-report` | IEEE Methods + Results text generation |
+| `xlstat-guide` | Step-by-step XLSTAT Cloud navigation |
+
+---
+
+## The pipeline
+
+| Phase | What happens | Where |
+|-------|-------------|-------|
+| 0 — Intake | Variable identification, outlier detection, analysis plan | Excel |
+| 1 — EDA | Descriptive stats with auditable formulas, automatic flags | Excel |
+| 2 — Normality | Shapiro-Wilk + Anderson-Darling, parametric/non-parametric decision | XLSTAT Cloud |
+| 3 — Homoscedasticity | Levene's test (informative, does not change test choice) | XLSTAT Cloud |
+| 4 — Inference | Welch ANOVA or Kruskal-Wallis | XLSTAT Cloud |
+| 5 — Post-hoc | Games-Howell / Dunn + Holm-Bonferroni, effect sizes, letter groups | XLSTAT Cloud |
+| 6 — Regression | OLS with LINEST(), model comparison by AIC/BIC | Excel |
+| 7 — Diagnostics | Residuals, Cook's D, Breusch-Pagan, Durbin-Watson | Excel + XLSTAT |
+| 8 — Report | IEEE Methods + Results sections, copy-paste ready | Excel |
 
 ---
 
 ## Statistical methodology
 
-All decisions follow peer-reviewed recommendations:
+Defaults follow peer-reviewed recommendations, not software convenience:
 
-| Decision | Rule | Reference |
-|----------|------|-----------|
-| Normality test | Shapiro-Wilk always (K-S only if n > 2000) | Razali & Wah (2011) |
-| Normality verification | Anderson-Darling as secondary check | Anderson & Darling (1954) |
-| Default ANOVA | Welch ANOVA unconditionally | Delacre et al. (2019) |
+| Decision | Default | Reference |
+|----------|---------|-----------|
+| Normality test | Shapiro-Wilk (K-S only if n > 2000) | Razali & Wah (2011) |
+| ANOVA | Welch unconditionally — robust to unequal variances without power loss | Delacre et al. (2019) |
 | Post-hoc (Welch) | Games-Howell | Games & Howell (1976) |
 | Post-hoc (KW) | Dunn + Holm-Bonferroni | Holm (1979) |
-| Effect size (ANOVA) | η²_p = SS_factor / (SS_factor + SS_error) | Cohen (1973) |
+| Effect size (ANOVA) | Partial η² = SS_factor / (SS_factor + SS_error) | Cohen (1973) |
 | Effect size (KW) | η²_H = (H − k + 1) / (n − k) | Tomczak & Tomczak (2014) |
-| Effect size (pairwise) | Cohen's d and r conventions | Cohen (1988) |
-| Kurtosis threshold | \|excess kurtosis\| > 2 (Excel KURT() returns excess) | Hair et al. (2010) |
-| VIF thresholds | > 5 moderate, > 10 severe | Hair et al. (2010, p. 170) |
-| Cook's D flag | 4 / (n − k − 1) | Cook (1977) |
-| Heteroscedasticity test | Breusch-Pagan formal test | Breusch & Pagan (1979) |
-| Model selection | AIC for model comparison (ΔAIC) | Akaike (1974) |
-| Model selection | BIC as complementary criterion | Schwarz (1978) |
-| Durbin-Watson | Critical values dL, dU (no fixed cutoffs) | Durbin & Watson (1951) |
-| Confidence intervals | T.INV.2T(0.05, n−1) — never fixed z = 1.96 | — |
-| p-value interpretation | Never "no effect" without 1−β and effect size | — |
-| Multiple comparisons | Holm-Bonferroni > Bonferroni | Holm (1979) |
+| Confidence intervals | t-critical via T.INV.2T() — never fixed z = 1.96 | — |
+| VIF thresholds | > 5 moderate, > 10 severe | Hair et al. (2010) |
 
-### Capabilities
-
-**Claude does directly in Excel:**
-- Full descriptive statistics with auditable formulas
-- OLS regression with LINEST() (Excel 365 spill / Excel 2019 array formula)
-- Residuals, standardized residuals, approximate Cook's D, approximate VIF
-- Basic diagnostic plots (residuals vs fitted, Q-Q approximation)
-- Model comparison tables (AIC, BIC, R²_adj)
-
-**Claude delegates to XLSTAT Cloud (free):**
-- Formal normality tests (Shapiro-Wilk, Anderson-Darling)
-- Levene / Bartlett homoscedasticity tests
-- Welch ANOVA / Factorial ANOVA with Type III SS
-- Kruskal-Wallis, Dunn post-hoc
-- Breusch-Pagan, Durbin-Watson
-- Formal Q-Q plots, violin plots, grouped boxplots
-
-**Beyond the pipeline (floor not ceiling):**
-If the analysis requires methods outside the pipeline — Repeated Measures ANOVA, MANOVA, mixed models, robust regression, PCA, survival analysis — Claude proceeds using its general statistical knowledge and suggests JASP or R for models that XLSTAT Cloud cannot handle.
+The kit distinguishes clearly between what Claude can do directly in Excel and what requires XLSTAT Cloud. Both paths are covered with step-by-step instructions.
 
 ---
 
-## Requirements
+## Scope
 
-- Python 3.7+
-- `openpyxl` (`pip install openpyxl`)
-- Microsoft 365 with Claude for Excel extension
-- Free XLSTAT Cloud account at [app.xlstat.com](https://app.xlstat.com)
+The 10 skills define a **minimum guaranteed pipeline**, not a ceiling. If your analysis requires methods outside the pipeline — repeated measures ANOVA, MANOVA, mixed models, PCA, survival analysis — Claude proceeds using its general statistical knowledge and flags when it is going beyond the structured pipeline.
+
+---
+
+## Roadmap
+
+This kit covers the core statistical pipeline for between-subjects designs. Planned additions:
+
+- **Data cleaning skills** — audit and cleaning pipeline for messy datasets before they enter the analysis
+- **Domain-specific skills** — repeated measures, survival analysis, PCA, mixed models
+- **Expanded XLSTAT coverage** — dedicated skills for specific XLSTAT Cloud workflows
+
+The roadmap is driven by real use cases. If you have a research context where this kit falls short, open an issue — that's the most useful contribution you can make.
+
+---
+
+## Contributing
+
+This project grows through community input. There are several ways to contribute:
+
+**Report problems.** If a skill produces a methodologically incorrect result, wrong formula, or bad XLSTAT instructions — open an issue with as much detail as you can. Statistical errors are the highest priority.
+
+**Suggest or submit new skills.** If you work in a research area with specific analytical needs not covered here (clinical trials, longitudinal data, genomics, social sciences...), open an issue describing the use case. If you want to build the skill yourself, submit a pull request — each skill follows a simple 6-field structure (name, trigger, inputs, outputs, restrictions, instructions) that is easy to replicate from the existing examples.
+
+**Share real-world feedback.** If you've used this kit on an actual dataset, feedback on what worked and what didn't is extremely valuable — even if it's just a comment in an issue.
+
+The goal is a community-maintained library of statistical skills for academic researchers, not a single-author project.
+
+---
+
+## Limitations
+
+- Requires Claude Pro (~$20/month) and Microsoft 365 for the Claude for Excel add-in
+- XLSTAT Cloud free version covers all tests in this pipeline; some advanced modules require the paid tier
+- Designed and tested for between-subjects designs; repeated measures require additional handling
+- Claude for Excel's skill and memory system may change — this kit will be updated accordingly
 
 ---
 
@@ -131,17 +138,10 @@ If the analysis requires methods outside the pipeline — Repeated Measures ANOV
 
 ```
 claude-excel-stats-kit/
-├── build_stats_kit.py          # Script that generates the Excel configuration file
-├── ClaudeForExcel_StatsKit.xlsx # Pre-built Excel file (ready to use)
+├── ClaudeForExcel_StatsKit.xlsx    # Configuration file — download and use directly
 ├── README.md
 └── LICENSE
 ```
-
----
-
-## Contributing
-
-Pull requests welcome. If you find a statistical error, methodological inconsistency, or want to add a skill (e.g., survival analysis, PCA, mixed models), please open an issue.
 
 ---
 
@@ -153,17 +153,17 @@ MIT — see [LICENSE](LICENSE).
 
 ## References
 
-- Akaike, H. (1974). A new look at the statistical model identification. *IEEE Transactions on Automatic Control*, 19(6), 716–723.
-- Anderson, T. W., & Darling, D. A. (1954). A test of goodness of fit. *Journal of the American Statistical Association*, 49(268), 765–769.
-- Breusch, T. S., & Pagan, A. R. (1979). A simple test for heteroscedasticity and random coefficient variation. *Econometrica*, 47(5), 1287–1294.
-- Cohen, J. (1973). Eta-squared and partial eta-squared in fixed factor ANOVA designs. *Educational and Psychological Measurement*, 33(1), 107–112.
-- Cohen, J. (1988). *Statistical power analysis for the behavioral sciences* (2nd ed.). Lawrence Erlbaum Associates.
-- Cook, R. D. (1977). Detection of influential observation in linear regression. *Technometrics*, 19(1), 15–18.
-- Delacre, M., Leys, C., Mora, Y. L., & Lakens, D. (2019). Taking parametric assumptions seriously: Arguments for the use of Welch's F-test instead of the classical F-test in one-way ANOVA. *International Review of Social Psychology*, 32(1).
-- Durbin, J., & Watson, G. S. (1951). Testing for serial correlation in least squares regression, II. *Biometrika*, 38(1–2), 159–177.
-- Games, P. A., & Howell, J. F. (1976). Pairwise multiple comparison procedures with unequal n's and/or variances: A Monte Carlo study. *Journal of Educational Statistics*, 1(2), 113–125.
+- Akaike, H. (1974). *IEEE Transactions on Automatic Control*, 19(6), 716–723.
+- Anderson, T. W., & Darling, D. A. (1954). *Journal of the American Statistical Association*, 49(268), 765–769.
+- Breusch, T. S., & Pagan, A. R. (1979). *Econometrica*, 47(5), 1287–1294.
+- Cohen, J. (1973). *Educational and Psychological Measurement*, 33(1), 107–112.
+- Cohen, J. (1988). *Statistical power analysis for the behavioral sciences* (2nd ed.). Lawrence Erlbaum.
+- Cook, R. D. (1977). *Technometrics*, 19(1), 15–18.
+- Delacre, M., Leys, C., Mora, Y. L., & Lakens, D. (2019). *International Review of Social Psychology*, 32(1).
+- Durbin, J., & Watson, G. S. (1951). *Biometrika*, 38(1–2), 159–177.
+- Games, P. A., & Howell, J. F. (1976). *Journal of Educational Statistics*, 1(2), 113–125.
 - Hair, J. F., Black, W. C., Babin, B. J., & Anderson, R. E. (2010). *Multivariate data analysis* (7th ed.). Pearson.
-- Holm, S. (1979). A simple sequentially rejective multiple test procedure. *Scandinavian Journal of Statistics*, 6(2), 65–70.
-- Razali, N. M., & Wah, Y. B. (2011). Power comparisons of Shapiro-Wilk, Kolmogorov-Smirnov, Lilliefors and Anderson-Darling tests. *Journal of Statistical Modeling and Analytics*, 2(1), 21–33.
-- Schwarz, G. (1978). Estimating the dimension of a model. *Annals of Statistics*, 6(2), 461–464.
-- Tomczak, M., & Tomczak, E. (2014). The need to report effect size estimates revisited. An overview of some recommended measures of effect size. *Trends in Sport Sciences*, 1(21), 19–25.
+- Holm, S. (1979). *Scandinavian Journal of Statistics*, 6(2), 65–70.
+- Razali, N. M., & Wah, Y. B. (2011). *Journal of Statistical Modeling and Analytics*, 2(1), 21–33.
+- Schwarz, G. (1978). *Annals of Statistics*, 6(2), 461–464.
+- Tomczak, M., & Tomczak, E. (2014). *Trends in Sport Sciences*, 1(21), 19–25.
